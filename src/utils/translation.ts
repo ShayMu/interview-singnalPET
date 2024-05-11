@@ -47,8 +47,9 @@ const saveCache = () =>{
     localStorage.setItem(_localeLangCache, JSON.stringify(_cache));
 };
 
-export const getLocale = ():SupportedLang => { 
+export const getLocale = ():SupportedLang => {
     let currLocale = localStorage.getItem(_userLocaleKey) as SupportedLang;
+    if (!Object.values(SupportedLang).includes(currLocale)) currLocale = SupportedLang.English;
 
     let localeCache = localStorage.getItem(_localeLangCache);
     if (localeCache) _cache = JSON.parse(localeCache) as CacheType;
@@ -60,6 +61,11 @@ export const getLocale = ():SupportedLang => {
 export const saveLocale = (newLocale:SupportedLang) => {
     if (!_cache[newLocale]) _cache[newLocale] = {};
     saveCache();
+
+    if (!Object.values(SupportedLang).includes(newLocale)) {
+        alert(newLocale + ' is not a supported language');
+        newLocale = SupportedLang.English;
+    }
     localStorage.setItem(_userLocaleKey, newLocale);
 }
 
