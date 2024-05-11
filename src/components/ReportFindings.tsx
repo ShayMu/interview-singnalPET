@@ -5,7 +5,7 @@ import { type Finding, type Findings } from "../models/finding";
 import { getRandomNumberInRange } from "../utils/numbers";
 import { selectRandomObjects } from "../utils/objects";
 import { randomXrayFinding } from "../utils/strings";
-import { translate } from "../utils/translation";
+import { Translate } from './ui/translate'
 
 const styles = {
     gap3: {
@@ -148,14 +148,13 @@ const ReportFinding = ({
                         onCheckedChange={onCheckedChange}
                     />
                 )}
-                <div
+                <Translate
                     style={{
                         color: checkedStatus
                             ? "text-sp-dark-blue"
                             : "text-report-light-gray ",
                     }}
-                    translate="yes"
-                >{translate(`${finding.name}`)}</div>
+                >{`${finding.name}`}</Translate>
             </div>
             <div style={styles.gap25}>
                 <Pill filled={true} isNormal={isNormal} checked={checked} />

@@ -4,7 +4,7 @@ import { PatientDetailsModel, patientId } from "../models/patientDetails";
 import { convertToReadableString } from "../utils/strings";
 import { getRandomNumberInRange } from "../utils/numbers";
 import { loadingText } from "../utils/constants";
-import { translate } from "../utils/translation";
+import { Translate } from './ui/translate'
 
 const styles = {
     container: {
@@ -45,16 +45,16 @@ const ParentDetailsSection = (props: ParentDetailsSectionInterface) => {
             {details ? (
                 Object.keys(details).map((field) => (
                     <div key={field} style={styles.detailContainer}>
-                        <span style={styles.detailTitle} translate="yes">
-                            {translate(convertToReadableString(field))}
-                        </span>
+                        <Translate style={styles.detailTitle}>
+                            {convertToReadableString(field)}
+                        </Translate>
                         <InputTag>
                             {details[field as keyof typeof details]}
                         </InputTag>
                     </div>
                 ))
             ) : (
-                <span translate="yes">{translate(loadingText)}</span>
+                <Translate>{loadingText}</Translate>
             )}
         </div>
     );
