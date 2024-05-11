@@ -6,32 +6,70 @@ export enum SupportedLang {
     Portuguese='pt'
 }
 
+type CacheType = { [key in SupportedLang]:{[key:string]:string}};
+type TranslateRes = { translatedText: string, textLocale: SupportedLang};
+
 const _userLocaleKey = 'userLocale';
-let _locale:SupportedLang = SupportedLang.English;
+const _localeLangCache = 'localeLangCache';
+let _cache:CacheType = {} as CacheType;
 
-const initTranslation = () => {
-    const userLocale = localStorage.getItem(_userLocaleKey);
-    if (userLocale) _locale = userLocale as SupportedLang;
-    else localStorage.setItem(_userLocaleKey, _locale);
-};
+const translateHelper = async (text:string, to:SupportedLang):Promise<TranslateRes>=> {
+    let retText:TranslateRes = { translatedText: text, textLocale: to };
 
-const translateHelper = (text:string, to:SupportedLang):string=> {
-    console.log(text);
-    let retText:string = text;
-    if (to != SupportedLang.English) retText = '(' + to + ') [' + text + ']';
+    if (to === SupportedLang.English || !text) return retText;
+    if (!_cache[to]) _cache[to] = {};
+    if (_cache[to][text]) {
+        retText.translatedText = _cache[to][text];
+        return retText;
+    }
+
+    retText.translatedText = '(' + to + ') [' + text + ']';
+    const res = await fetch("http://localhost:5000/translate", {
+        method: "POST",
+        body: JSON.stringify({
+            q: text,
+            source: SupportedLang.English,
+            target: to,
+            format: "text",
+            api_key: ""
+        }),
+        headers: { "Content-Type": "application/json" }
+    });
+
+    retText.translatedText = (await res.json()).translatedText;
+
+    _cache[to][text] = retText.translatedText;
+    saveCache();
     return retText;
 }
 
-export const getLocale = ():SupportedLang => { return _locale };
-
-export const changeLocale = (to:SupportedLang) => {
-    _locale = to;
-    localStorage.setItem(_userLocaleKey, _locale);
-}
-
-export const translate = (text:any):string => {
-    return translateHelper(text||'', _locale);
+const saveCache = () =>{
+    localStorage.setItem(_localeLangCache, JSON.stringify(_cache));
 };
 
+export const getLocale = ():SupportedLang => { 
+    let currLocale = localStorage.getItem(_userLocaleKey) as SupportedLang;
 
-initTranslation();
+    let localeCache = localStorage.getItem(_localeLangCache);
+    if (localeCache) _cache = JSON.parse(localeCache) as CacheType;
+    else _cache[currLocale] = {};
+
+    return currLocale
+};
+
+export const saveLocale = (newLocale:SupportedLang) => {
+    if (!_cache[newLocale]) _cache[newLocale] = {};
+    saveCache();
+    localStorage.setItem(_userLocaleKey, newLocale);
+}
+
+export const translate = async (text:string|string[], to:SupportedLang):Promise<TranslateRes> => {
+    let stringText = '';
+    if (!Array.isArray(text)) stringText = text;
+    else {
+        text.forEach(element => {
+            stringText += element;
+        });
+    }
+    return translateHelper(stringText||'', to);
+};

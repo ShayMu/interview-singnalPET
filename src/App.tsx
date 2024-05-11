@@ -1,4 +1,4 @@
-import React, {createContext} from "react";
+import React, { createContext, useEffect, useState } from "react";
 import "./App.css";
 import ReportHeader from "./components/ReportHeader";
 import ReportPage from "./components/ReportPage";
@@ -6,6 +6,17 @@ import ReportSection from "./components/ReportSection";
 import ReportBasicInfoSection from "./components/ReportBasicInfoSection";
 import ReportAdditionalInformationSection from "./components/ReportAdditionalInformationSection";
 import { additionalInformation } from "./utils/constants";
+import { SupportedLang, getLocale, saveLocale } from "./utils/translation";
+
+type AppContextType = {
+    locale: SupportedLang,
+    setLocale: (lang:SupportedLang)=>void
+}
+
+export const AppContext = createContext<AppContextType>({
+    locale: SupportedLang.English,
+    setLocale: ()=>{}
+});
 
 const styles = {
     wrapper: {
@@ -27,18 +38,26 @@ const styles = {
 };
 
 function App() {
+    const [locale, setLocale] = useState(getLocale());
+
+    useEffect(()=>{
+        saveLocale(locale);
+    }, [locale])
+
     return (
         <div style={styles.wrapper}>
             <div style={styles.container}>
-                <ReportHeader />
-                <ReportPage>
-                    <ReportBasicInfoSection />
-                </ReportPage>
-                <ReportPage>
-                    <ReportSection title={additionalInformation.title}>
-                        <ReportAdditionalInformationSection />
-                    </ReportSection>
-                </ReportPage>
+                <AppContext.Provider value={{locale, setLocale}}>
+                    <ReportHeader />
+                    <ReportPage>
+                        <ReportBasicInfoSection />
+                    </ReportPage>
+                    <ReportPage>
+                        <ReportSection title={additionalInformation.title}>
+                            <ReportAdditionalInformationSection />
+                        </ReportSection>
+                    </ReportPage>
+                </AppContext.Provider>
             </div>
         </div>
     );

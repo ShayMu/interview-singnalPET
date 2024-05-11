@@ -1,6 +1,8 @@
+import { useContext } from "react";
 import { reportHeader } from "../utils/constants";
 import { Translate } from './ui/translate'
-import { SupportedLang, getLocale, changeLocale } from "../utils/translation";
+import { SupportedLang } from "../utils/translation";
+import { AppContext } from "../App";
 
 const styles = {
     container: {
@@ -20,6 +22,9 @@ const styles = {
 };
 
 const ReportHeader = () => {
+
+    const {locale, setLocale} = useContext(AppContext);
+
     return (
         <div style={styles.container}>
             <img
@@ -30,12 +35,12 @@ const ReportHeader = () => {
             <Translate style={styles.secondaryText}>
                 {reportHeader.secondaryText}
             </Translate>
-            <select id="languages" name="languages" onChange={(e)=>{changeLocale(e.target.value as SupportedLang); window.location.reload();}}>
-                <option value={SupportedLang.English} selected={getLocale()===SupportedLang.English}>English</option>
-                <option value={SupportedLang.German} selected={getLocale()===SupportedLang.German}>German</option>
-                <option value={SupportedLang.Spanish} selected={getLocale()===SupportedLang.Spanish}>Spanish</option>
-                <option value={SupportedLang.French} selected={getLocale()===SupportedLang.French}>French</option>
-                <option value={SupportedLang.Portuguese} selected={getLocale()===SupportedLang.Portuguese}>Portuguese</option>
+            <select id="languages" name="languages" onChange={(e)=>setLocale(e.target.value as SupportedLang)} defaultValue={locale}>
+                <option value={SupportedLang.English}>English</option>
+                <option value={SupportedLang.German}>German</option>
+                <option value={SupportedLang.Spanish}>Spanish</option>
+                <option value={SupportedLang.French}>French</option>
+                <option value={SupportedLang.Portuguese}>Portuguese</option>
             </select>
         </div>
     );

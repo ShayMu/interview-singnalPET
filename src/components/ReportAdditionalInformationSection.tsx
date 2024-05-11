@@ -17,7 +17,7 @@ const styles = {
 const ReportAdditionalInformationSection = () => {
     return (
         <div translate="yes">
-            <Translate style={styles.title}>'Summary': </Translate>
+            <Translate style={styles.title}>Summary: </Translate>
             <InputTag editable={true}>{generateXrayAnalysisSummary()}</InputTag>
         </div>
     );
