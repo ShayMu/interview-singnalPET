@@ -38,7 +38,11 @@ const styles = {
 };
 
 function App() {
-    const [locale, setLocale] = useState(getLocale());
+    const browserLocale:string = navigator.language;
+    // Extract the language ISO code
+    const languageCode:string = browserLocale.split('-')[0];
+
+    const [locale, setLocale] = useState(getLocale(languageCode));
 
     useEffect(()=>{
         saveLocale(locale);

@@ -47,8 +47,9 @@ const saveCache = () =>{
     localStorage.setItem(_localeLangCache, JSON.stringify(_cache));
 };
 
-export const getLocale = ():SupportedLang => {
-    let currLocale = localStorage.getItem(_userLocaleKey) as SupportedLang;
+export const getLocale = (systemLocale:string):SupportedLang => {
+    let currLocale = (localStorage.getItem(_userLocaleKey) || '') as SupportedLang;
+    if (!currLocale) currLocale = systemLocale as SupportedLang;
     if (!Object.values(SupportedLang).includes(currLocale)) currLocale = SupportedLang.English;
 
     let localeCache = localStorage.getItem(_localeLangCache);
