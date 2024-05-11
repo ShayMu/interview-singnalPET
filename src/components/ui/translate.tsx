@@ -1,6 +1,6 @@
 import { ReactNode, CSSProperties, useState, useContext, useEffect } from 'react';
 import { AppContext } from '../../App';
-import { getLocale, translate } from '../../utils/translation';
+import { translate } from '../../utils/translation';
 
 
 interface TranslateProps {
@@ -17,7 +17,7 @@ export const Translate = (props:TranslateProps) => {
         setContent(props.children);
         if (typeof(props.children) === 'string' || Array.isArray(props.children)) {
             translate(props.children, locale).then((translateRes)=>{
-                if (getLocale() === translateRes.textLocale) setContent(translateRes.translatedText);
+                if (locale === translateRes.textLocale) setContent(translateRes.translatedText);
             });
         }
     }, [locale, props.children])
